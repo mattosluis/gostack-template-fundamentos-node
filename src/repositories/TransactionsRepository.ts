@@ -24,25 +24,25 @@ class TransactionsRepository {
   }
 
   public getBalance(): Balance {
+    const income = this.transactions.reduce((total, transaction) => {
+      if (transaction.type === 'income') {
+        return total + transaction.value;
+      }
+      return total;
+    }, 0);
+
+    const outcome = this.transactions.reduce((total, transaction) => {
+      if (transaction.type === 'outcome') {
+        return total + transaction.value;
+      }
+      return total;
+    }, 0);
+
     const balance = {
-      income: 0,
-      outcome: 0,
-      total: 0,
+      income,
+      outcome,
+      total: income - outcome,
     };
-
-    this.transactions.reduce(
-      (accumulator, currentValue) => {
-        if (currentValue.type === 'income') {
-          balance.income += currentValue.value;
-          return currentValue;
-        }
-        balance.outcome += currentValue.value;
-        return currentValue;
-      },
-      { value: 0 },
-    );
-
-    balance.total = balance.income - balance.outcome;
 
     return balance;
   }
